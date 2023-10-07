@@ -278,7 +278,7 @@ const puppetYoutube = async (options) => {
     await page.evaluate(() => document.querySelector("#chips > ytmusic-chip-cloud-chip-renderer:nth-child(1) > div > a > yt-formatted-string").click());
     await page.evaluate(() => document.querySelector("#contents > ytmusic-responsive-list-item-renderer:nth-child(1) > div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.title-column.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string > a").click());
     // console.log('Playing ' + options.youtube + ' on Youtube Music...');
-    await page.waitForFunction(options.timer)
+    await page.waitForTimeout(99999)
     await browser.close();
 
 }
