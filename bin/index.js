@@ -22,6 +22,7 @@ const options = yargs
     .option("l", { alias: "list", describe: "List projects", type: "boolean", demandOption: false })
     .option("c", { alias: "clear", describe: "Clear projects", type: "boolean", demandOption: false })
     .option("y", { alias: "youtube", describe: "Youtube", type: "string", demandOption: false })
+    .option("a", { alias: "album", describe: "Album", type: "string", demandOption: false })
     .argv;
 
 
@@ -101,6 +102,9 @@ const timer = (options) => {
         if (options.youtube) {
         console.log(boxen('Playing ' + options.youtube + ' on Youtube Music...', { padding: 1, borderColor: 'green', borderStyle: 'bold', align: 'center', dimBorder: true, float: 'center', backgroundColor: '#097969', color: 'white' }));
         }
+        if (options.album) {
+            console.log(boxen('Playing ' + options.album + ' album on Youtube Music...', { padding: 1, borderColor: 'green', borderStyle: 'bold', align: 'center', dimBorder: true, float: 'center', backgroundColor: '#097969', color: 'white' }));
+            }
 
     }
     let interval = setInterval(() => {
@@ -289,3 +293,43 @@ if (options.youtube && options.name && options.timer) {
     timer(options);
 }
 
+
+
+const puppetAlbum = async (options) => {
+    puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+    puppeteer.use(stealthPlugin());
+    const browser = await puppeteer.launch({
+        headless: 'new', 
+        ignoreDefaultArgs: ['--mute-audio'],
+        args: ['--autoplay-policy=no-user-gesture-required']
+      })
+    const page = await browser.newPage();
+    await page.setViewport({
+        width: 1280,
+        height: 720,
+    });
+    console.log('Navigating to Youtube Music...');
+    await page.goto('https://music.youtube.com', { waitUntil: 'networkidle2' });
+    await page.waitForSelector('#input.style-scope.ytmusic-search-box');
+    // await page.click('input#input.style-scope.ytmusic-search-box');
+    await page.evaluate(() => document.querySelector('#input.style-scope.ytmusic-search-box').click());
+    await page.focus('input#input.style-scope.ytmusic-search-box');
+    await page.type('input#input.style-scope.ytmusic-search-box', options.album);
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(3000);
+    // await page.click('#play-button > div > yt-icon');
+    await page.evaluate(() => document.querySelector("#contents > ytmusic-card-shelf-renderer > div > div.card-content-container.style-scope.ytmusic-card-shelf-renderer > div.main-card-container.style-scope.ytmusic-card-shelf-renderer > div > div.details-container.style-scope.ytmusic-card-shelf-renderer > div.metadata-container.style-scope.ytmusic-card-shelf-renderer > yt-formatted-string > a").click());
+    await page.waitForTimeout(4000);
+    await page.evaluate(() => document.querySelector("#top-level-buttons > yt-button-renderer > yt-button-shape > button > yt-touch-feedback-shape > div > div.yt-spec-touch-feedback-shape__fill").click());
+    // console.log('Playing ' + options.youtube + ' on Youtube Music...');
+    await page.waitForTimeout(99999999)
+    await browser.close();
+}
+
+if (options.album && options.name && options.timer) {
+    puppetAlbum(options);
+    timer(options);
+}
+
+
+// document.querySelector("#contents > ytmusic-responsive-list-item-renderer:nth-child(1) > div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.title-column.style-scope.ytmusic-responsive-list-item-renderer")
