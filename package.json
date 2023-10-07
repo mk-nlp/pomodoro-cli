@@ -1,0 +1,38 @@
+{
+  "name": "pomodoro-cli",
+  "version": "1.0.0",
+  "description": "A simple CLI Pomodoro Technique timer built with Node.js",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "pomodoro-cli": "bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-nlp/pomodoro-cli.git"
+  },
+  "keywords": [
+    "pomodoro-timer",
+    "pomodoro-technqiue",
+    "pomodoro",
+    "timer"
+  ],
+  "author": "mk-nlp (Mert Kısacık)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mk-nlp/pomodoro-cli/issues"
+  },
+  "homepage": "https://github.com/mk-nlp/pomodoro-cli#readme",
+  "dependencies": {
+    "boxen": "4.0",
+    "chalk": "2.4",
+    "play-sound": "^1.1.6",
+    "puppeteer": "^21.3.8",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "yargs": "^17.7.2"
+  }
+}
