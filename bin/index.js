@@ -23,6 +23,7 @@ const options = yargs
     .option("c", { alias: "clear", describe: "Clear projects", type: "boolean", demandOption: false })
     .option("y", { alias: "youtube", describe: "Youtube", type: "string", demandOption: false })
     .option("a", { alias: "album", describe: "Album", type: "string", demandOption: false })
+    .option("p", { alias: "pomodoro", describe: "Pomodoro Mode", type: "boolean", demandOption: false })
     .argv;
 
 
@@ -90,6 +91,9 @@ const boxenOptions = {
 
 const timer = (options) => {
     let seconds = options.timer * 60;
+    if (options.pomodoro) {
+        seconds = 25 * 60;
+    }
     const readline = require('readline').createInterface({
         input: process.stdin,
         output: process.stdout
@@ -169,14 +173,22 @@ const saveTimeToJson = () => {
     if (doesProjectExist) {
         json.projects.forEach(project => {
             if (project.name === options.name) {
-                project.time = Number(project.time) + Number(options.timer);
+                if (options.timer && !isNaN(options.timer)) {
+                    project.time = Number(project.time) + Number(options.timer);
+                }
+    
+                if (options.pomodoro) {
+                    project.time = Number(project.time) + 25;
+                }
             }
         });
     } else {
+        
         const newProject = {
+            
             id: (json.projects?.length || 0) + 1,
             name: options.name,
-            time: Number(options.timer)
+            time: Number(options.timer || options.pomodoro && 25)
         };
 
         if (!json.projects) {
@@ -214,45 +226,6 @@ const listProjects = () => {
     }
 }
 
-if (options.list) {
-    listProjects();
-}
-
-if (options.name && options.timer && !options.youtube) {
-    timer(options);
-}
-
-if (!options.name && !options.timer && !options.list && !options.clear) {
-    console.log("Please supply a command, try using --help for more information")
-}
-
-
-
-if (!options.name && options.timer) {
-    console.log("Supply a project name or try using --help for more information")
-}
-
-if (options.name && !options.timer) {
-    console.log("Supply a timer or try using --help for more information")
-}
-
-if (options.clear) {
-    const readline = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
-    })
-    readline.question(`Are you sure you want to clear all projects? (y/n) `, answer => {
-        if (answer === 'y') {
-            fs.unlinkSync('test.json');
-            console.log('Projects cleared');
-            exit();
-        } else {
-            console.log('Aborted!');
-            exit();
-        }
-    })
-    
-}
 
 
 
@@ -331,5 +304,71 @@ if (options.album && options.name && options.timer) {
     timer(options);
 }
 
+if (options.list) {
+    listProjects();
+}
+
+if (options.name && options.timer && !options.youtube && !options.album && !options.pomodoro) {
+    timer(options);
+}
+
+if (!options.name && !options.timer && !options.list && !options.clear) {
+    console.log("Please supply a command, try using --help for more information")
+}
+
+if (options.name && options.pomodoro && options.youtube) {
+    timer(options);
+    puppetYoutube(options);
+}
+
+
+if (options.name && options.pomodoro && options.album) {
+    timer(options);
+    puppetAlbum(options);
+}
+
+if (options.name && options.pomodoro && !options.youtube && !options.album && !options.timer) {
+    timer(options);
+}
+
+
+if (!options.name && options.timer && options.pomodoro) {
+    console.log("Supply a project name or try using --help for more information")
+}
+
+if (options.name && !options.timer && !options.pomodoro) {
+    console.log("Supply a timer or try using --help for more information")
+}
+
+if (options.name && options.timer && options.youtube && options.album) {
+    console.log("Supply either youtube or album or try using --help for more information")
+}
+
+if (options.name && options.pomodoro && options.youtube && options.album) {
+    console.log("Supply either youtube or album or try using --help for more information")
+}
+
+if (options.name && options.timer && options.pomodoro) {
+    console.log("Either use the timer option or the pomodoro option, not both. --help for more information")
+}
+
+
+if (options.clear) {
+    const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+    })
+    readline.question(`Are you sure you want to clear all projects? (y/n) `, answer => {
+        if (answer === 'y') {
+            fs.unlinkSync('test.json');
+            console.log('Projects cleared');
+            exit();
+        } else {
+            console.log('Aborted!');
+            exit();
+        }
+    })
+    
+}
 
 // document.querySelector("#contents > ytmusic-responsive-list-item-renderer:nth-child(1) > div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.title-column.style-scope.ytmusic-responsive-list-item-renderer")
