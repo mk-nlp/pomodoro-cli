@@ -103,7 +103,7 @@ This is my first Node.js project, so I'm sure there are better ways to do things
 - mk-nlp (Mert Kısacık)
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://github.com/mk-nlp/pomodoro-cli/blob/main/LICENSE.txt)
 
 
 
